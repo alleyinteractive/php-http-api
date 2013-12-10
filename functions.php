@@ -7,17 +7,17 @@ require_once( dirname( __FILE__ ) . '/class-http.php' );
  */
 
 /**
- * Returns the initialized WP_Http Object
+ * Returns the initialized Http Object
  *
  * @access private
  *
- * @return WP_Http HTTP Transport object.
+ * @return Http HTTP Transport object.
  */
-function _wp_http_get_object() {
+function _http_get_object() {
 	static $http;
 
 	if ( is_null($http) )
-		$http = new WP_Http();
+		$http = new Http();
 
 	return $http;
 }
@@ -45,9 +45,9 @@ function _wp_http_get_object() {
  *
  * List of default arguments:
  * 'method'      => 'GET'
- *  - Default 'GET'  for wp_remote_get()
- *  - Default 'POST' for wp_remote_post()
- *  - Default 'HEAD' for wp_remote_head()
+ *  - Default 'GET'  for remote_get()
+ *  - Default 'POST' for remote_post()
+ *  - Default 'HEAD' for remote_head()
  * 'timeout'     => 5
  * 'redirection' => 5
  * 'httpversion' => '1.0'
@@ -66,50 +66,50 @@ function _wp_http_get_object() {
  * @param array $args Optional. Override the defaults.
  * @return array The response.
  */
-function wp_remote_request($url, $args = array()) {
-	$objFetchSite = _wp_http_get_object();
+function remote_request($url, $args = array()) {
+	$objFetchSite = _http_get_object();
 	return $objFetchSite->request($url, $args);
 }
 
 /**
  * Retrieve the raw response from the HTTP request using the GET method.
  *
- * @see wp_remote_request() For more information on the response array format and default arguments.
+ * @see remote_request() For more information on the response array format and default arguments.
  *
  * @param string $url Site URL to retrieve.
  * @param array $args Optional. Override the defaults.
  * @return array The response.
  */
-function wp_remote_get($url, $args = array()) {
-	$objFetchSite = _wp_http_get_object();
+function remote_get($url, $args = array()) {
+	$objFetchSite = _http_get_object();
 	return $objFetchSite->get($url, $args);
 }
 
 /**
  * Retrieve the raw response from the HTTP request using the POST method.
  *
- * @see wp_remote_request() For more information on the response array format and default arguments.
+ * @see remote_request() For more information on the response array format and default arguments.
  *
  * @param string $url Site URL to retrieve.
  * @param array $args Optional. Override the defaults.
  * @return array The response.
  */
-function wp_remote_post($url, $args = array()) {
-	$objFetchSite = _wp_http_get_object();
+function remote_post($url, $args = array()) {
+	$objFetchSite = _http_get_object();
 	return $objFetchSite->post($url, $args);
 }
 
 /**
  * Retrieve the raw response from the HTTP request using the HEAD method.
  *
- * @see wp_remote_request() For more information on the response array format and default arguments.
+ * @see remote_request() For more information on the response array format and default arguments.
  *
  * @param string $url Site URL to retrieve.
  * @param array $args Optional. Override the defaults.
  * @return array The response.
  */
-function wp_remote_head($url, $args = array()) {
-	$objFetchSite = _wp_http_get_object();
+function remote_head($url, $args = array()) {
+	$objFetchSite = _http_get_object();
 	return $objFetchSite->head($url, $args);
 }
 
@@ -119,7 +119,7 @@ function wp_remote_head($url, $args = array()) {
  * @param array $response HTTP response.
  * @return array The headers of the response. Empty array if incorrect parameter given.
  */
-function wp_remote_retrieve_headers(&$response) {
+function remote_retrieve_headers(&$response) {
 	if ( ! isset($response['headers']) || ! is_array($response['headers']))
 		return array();
 
@@ -133,7 +133,7 @@ function wp_remote_retrieve_headers(&$response) {
  * @param string $header Header name to retrieve value from.
  * @return string The header value. Empty string on if incorrect parameter given, or if the header doesn't exist.
  */
-function wp_remote_retrieve_header(&$response, $header) {
+function remote_retrieve_header(&$response, $header) {
 	if ( ! isset($response['headers']) || ! is_array($response['headers']))
 		return '';
 
@@ -151,7 +151,7 @@ function wp_remote_retrieve_header(&$response, $header) {
  * @param array $response HTTP response.
  * @return string the response code. Empty string on incorrect parameter given.
  */
-function wp_remote_retrieve_response_code(&$response) {
+function remote_retrieve_response_code(&$response) {
 	if ( ! isset($response['response']) || ! is_array($response['response']))
 		return '';
 
@@ -166,7 +166,7 @@ function wp_remote_retrieve_response_code(&$response) {
  * @param array $response HTTP response.
  * @return string The response message. Empty string on incorrect parameter given.
  */
-function wp_remote_retrieve_response_message(&$response) {
+function remote_retrieve_response_message(&$response) {
 	if ( ! isset($response['response']) || ! is_array($response['response']))
 		return '';
 
@@ -179,7 +179,7 @@ function wp_remote_retrieve_response_message(&$response) {
  * @param array $response HTTP response.
  * @return string The body of the response. Empty string if no body or incorrect parameter given.
  */
-function wp_remote_retrieve_body(&$response) {
+function remote_retrieve_body(&$response) {
 	if ( ! isset($response['body']) )
 		return '';
 
@@ -189,17 +189,17 @@ function wp_remote_retrieve_body(&$response) {
 /**
  * Determines if there is an HTTP Transport that can process this request.
  *
- * @param array  $capabilities Array of capabilities to test or a wp_remote_request() $args array.
+ * @param array  $capabilities Array of capabilities to test or a remote_request() $args array.
  * @param string $url Optional. If given, will check if the URL requires SSL and adds that requirement to the capabilities array.
  *
  * @return bool
  */
-function wp_http_supports( $capabilities = array(), $url = null ) {
-	$objFetchSite = _wp_http_get_object();
+function http_supports( $capabilities = array(), $url = null ) {
+	$objFetchSite = _http_get_object();
 
 	$count = count( $capabilities );
 
-	// If we have a numeric $capabilities array, spoof a wp_remote_request() associative $args array
+	// If we have a numeric $capabilities array, spoof a remote_request() associative $args array
 	if ( $count && count( array_filter( array_keys( $capabilities ), 'is_numeric' ) ) == $count ) {
 		$capabilities = array_combine( array_values( $capabilities ), array_fill( 0, $count, true ) );
 	}
@@ -294,12 +294,12 @@ function send_origin_headers() {
  * @return string Empty string if not found, or description if found.
  */
 function get_status_header_desc( $code ) {
-	global $wp_header_to_desc;
+	global $header_to_desc;
 
 	$code = intval( $code );
 
-	if ( !isset( $wp_header_to_desc ) ) {
-		$wp_header_to_desc = array(
+	if ( !isset( $header_to_desc ) ) {
+		$header_to_desc = array(
 			100 => 'Continue',
 			101 => 'Switching Protocols',
 			102 => 'Processing',
@@ -358,8 +358,8 @@ function get_status_header_desc( $code ) {
 		);
 	}
 
-	if ( isset( $wp_header_to_desc[$code] ) )
-		return $wp_header_to_desc[$code];
+	if ( isset( $header_to_desc[$code] ) )
+		return $header_to_desc[$code];
 	else
 		return '';
 }
